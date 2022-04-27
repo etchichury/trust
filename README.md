@@ -23,6 +23,7 @@ If I stop and think, it's not just Rust that I'll learn along the way. What I ca
 - Networking
 - Linux
 - Typing and keyboard shortcuts
+- Writing skill
 
 ## Running
 
@@ -46,21 +47,21 @@ chmod +x run.sh
 
 ## Captain's Log (yes, it's a Star Trek: The Original Series reference)
 
-Here, I'll describe my journey trhought this project, my thoughts and findings.
+Here, I'll describe my journey throught this project, my thoughts and findings.
 
 ### 04/24/22 - Sunday
 
-I first downloaded Rust, and already noted something interesing: it has specific command to install when you're using WSL:
+I first downloaded Rust, and already noted something interesting: it has a specific command to install when you're using WSL:
 
 ```sh
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-Creating a new project using Cargo (Rust's package manager) is really starightfoward. And I can say the samething for setting up the manifest file (adding metadata and managing dependencies).
+Creating a new project using Cargo (Rust's package manager) is really starightfoward. And I can say the same thing for setting up the manifest file (adding metadata and managing dependencies).
 
 Since we want to deal inside Linux' user space we have to use [TUN/TAP](https://www.kernel.org/doc/Documentation/networking/tuntap.txt) and Rust already provides an [interface](https://docs.rs/tun-tap/latest/tun_tap/) for that!
 
-The first iteration of the program is really simple. We create a new tun interface and print what we receive. What is a little more complex is how to setup the device create by this program. First we need to setup a capability to our program using the `setcap` command.
+The first iteration of the program is really simple. We create a new tun interface and print what we receive. What is a little more complex is how to setup the device created by this program. First we need to setup a capability to our program using the `setcap` command.
 
 According to `man capabilities`:
 
@@ -74,7 +75,7 @@ The capabilty we want to set is `cap_net_admin` which according to `man capabili
 > - [...]
 > - modify routing tables;
 
-After that, we add a new protocol address (`ip addr add` command) specifing the range of IPs and the device to add the address to (`man ip-address` for more information). We are also going to need to bring up the device interface using the `ip link set` command (`man ip-link` for more information). To avoid going trhough these steps every time, we can create a bash script to do it for us.
+After that, we add a new protocol address (`ip addr add` command) specifing the range of IPs and the device to add the address to (`man ip-address` for more information). We are also going to need to bring up the device interface using the `ip link set` command (`man ip-link` for more information). To avoid going through these steps every time, we can create a bash script to do it for us.
 
 I learned a new bash syntax (`$!`) which gets the process ID (PID) of the last job run in the background.
 
@@ -84,13 +85,15 @@ Using `ping`, we start sending packet to our interface (`ping -I tun0 <ip_addr>`
 - Proto [2 bytes]
 - Raw protcol(IP, IPv6, etc) frame.
 
-To track these flow of pacckets we can use `tshark`, which is the TUI version of the [Wireshark](https://www.wireshark.org/) program. I didn't know that Wireshark had a TUI version, but when I stop to think about it, it makes total sense.
+To track these flow of packets we can use `tshark`, which is the TUI version of the [Wireshark](https://www.wireshark.org/) software. I didn't know that Wireshark had a TUI version, but when I stop to think about it, it makes total sense.
 
 It turns out that our program is running in the background even after terminating it (`CRTL+C`). So I learned two new commands:
 
 - `pgrep`: look up for process based on name and other attributes. Example: `pgrep -af <name>`.
 - `term`: bash command that catches signals (like EXIT) and can execute code when they occur. Using this, will solve the issue where the process was still running (in background), even after exiting it.
 
-Regarding Rust, what I saw so far is actually really simple. There are some diferent syntaxes, like `::` and `..`, but they all tranlate to something I've already seen in other languages. One thing that I have to point out, is the Rust documentation. It's so _f_...ing nice! You get the Rust by Example book that explains and shows how things work in practice, and what I REALLY enjoyed: the standard library documentation, and **much** more. It got great keyboard intagration, the search algorithm is fast and works great, the explanations and examples are easy to follow and understand.
+Regarding Rust, what I saw so far is actually really simple. There are some diferent syntaxes, like `::` and `..`, but they all tranlate to something I've already seen in other languages. One thing that I have to point out, is the Rust documentation. It's so _f_...ing nice! You get the Rust by Example book that explains and shows how a lot things work in practice. And what I REALLY enjoyed: the standard library documentation. It got great keyboard intagration, the search algorithm is fast and works great, the explanations and examples are easy to follow and understand. There's so much content that it's almost overwelming, but in fact it's not because it's so well structured and easy to navigate.
 
-It has been about 3 hours since I started this project. I spent this time: installing and setting up Rust development environment, reading Rust documentation, going back and forth `man` pages, writing this README and, of course, following Jon's video. So far, I've watched 38 minutes of the video out of 5 hours. I guess this will take a bit longer than what I initially expected. :)
+It has been about 3 hours since I started this project. I spent this time: installing and setting up Rust development environment, reading Rust documentation, going back and forth `man` pages, writing this README and, of course, following Jon's video. So far, I've watched 38 minutes out of 5 hours. I guess this will take a bit longer than what I initially expected. :)
+
+### 04/27/22 - Wednesday
