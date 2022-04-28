@@ -23,7 +23,6 @@ If I stop and think, it's not just Rust that I'll learn along the way. What I ca
 - Networking
 - Linux
 - Typing and keyboard shortcuts
-- Writing skill
 
 ## Running
 
@@ -97,3 +96,42 @@ Regarding Rust, what I saw so far is actually really simple. There are some dife
 It has been about 3 hours since I started this project. I spent this time: installing and setting up Rust development environment, reading Rust documentation, going back and forth `man` pages, writing this README and, of course, following Jon's video. So far, I've watched 38 minutes out of 5 hours. I guess this will take a bit longer than what I initially expected. :)
 
 ### 04/27/22 - Wednesday
+
+A nice thing I realized after staying away from this project for a couple of day is that this series of videos are not a tutorial. Jon doesn't explain every command he types or go in depth of what he is doing as a tutorial would do. This is great, and for me, this is way better than standard tutorials. With this videos, **I** have to go after the knowledge gap, if I don't know what a command does or what he is talking about, I need to look through documentation, or else I'll be lost. I found a really nice way to learn.
+
+There are two packets that we're receiveing, one from ping and the other one I don't knowunderstand where it's coming from (neihter does Jon). The packets have two different hex values (proto):
+
+```
+// unkown
+read 52 bytes: [0, 0, 86, dd, 60, 0, 0, 0, 0, 8, 3a, ff, fe, 80, 0, 0, 0, 0, 0, 0, 1f, 6f, ba, b3, 75, af, 67, e1, ff, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 85, 0, c5, 83, 0, 0, 0, 0]
+// ping
+read 88 bytes: [0, 0, 8, 0, 45, 0, 0, 54, ea, 8f, 40, 0, 40, 1, ce, c5, c0, a8, 0, 1, c0, a8, 0, 2, 8, 0, 47, 17, 45, 58, 0, 7, b0, 0, 6a, 62, 0, 0, 0, 0, 86, 53, c, 0, 0, 0, 0, 0, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 1a, 1b, 1c, 1d, 1e, 1f, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 2a, 2b, 2c, 2d, 2e, 2f, 30, 31, 32, 33, 34, 35, 36, 37]
+```
+
+- `0x0800`: Internet Protocol Version 4 (IPv4) | Source: ping
+- `0x86DD`: Internet Protocol Version 6 (IPv6) | Source: unknown
+
+To parse the packet, Jon searches for a crate that parses it for us in a [website that hosts documentation host for Rust crates](https://docs.rs/about).
+
+Something really cool that now I confirmed is that just adding the dependecy to the manifest file is enough for the autocomplete. It doesn't require downloading or build it, it just works. I'm curious to know how they do it. this might be a future search.
+
+Now that we are parsing flags, protocol and raw protocol we have this:
+
+```
+read 84 bytes: (flags: 0, proto: 800) Ipv4HeaderSlice { slice: [45, 0, 0, 54, 41, d6, 40, 0, 40, 1, 77, 7f, c0, a8, 0, 1, c0, a8, 0, 2] }
+```
+
+Once I started adding the parsing, I saw that we are using `.` to call a method. I didn't understand why this was, shouldn't be `::`? No, and the explanation is pretty interesting, it turns out this helps identify and differentiate static methods (using `::`) and dynamic methods (using `.`). This [Reddit comment](https://www.reddit.com/r/rust/comments/3fimgp/comment/ctqfg33) explanation really helped me better uderstand it. I also found a really good source that will help me understand things like this and future reference it: [Appendix B: Operators and Symbols](https://doc.rust-lang.org/book/appendix-02-operators.html)
+
+Filtering a bit more (source, destination, size and protocol), we have this:
+
+```
+192.168.0.1 →  192.168.0.2 | 64 bytes of protocol 1
+```
+
+We have two protocols because they are from different levels.
+
+- Ethernet frame protocol: IPv4 (`0x0800`)
+- IP protcol: TCP (6) that we want or ICMP (1) when we `ping`.
+
+Didn't do much today, but learned a lot. Ending this session at 48 minutes of the video.
