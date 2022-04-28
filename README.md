@@ -1,6 +1,6 @@
 # Trust (TCP RUST)
 
-This is a simple implementation of the TCP protcol in [Rust](https://www.rust-lang.org/).
+This is a simple implementation of the TCP protocol in [Rust](https://www.rust-lang.org/).
 
 ## Description
 
